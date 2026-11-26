@@ -1,0 +1,12 @@
+{
+  "name": "layerforge",
+  "private": true,
+  "description": "LayerForge - a local 3D printing store (MongoDB, Express, React, Node)",
+  "scripts": {
+    "setup": "npm install --prefix server && npm install --prefix client",
+    "start": "npm run build --prefix client && npm start --prefix server",
+    "dev": "(npm run dev --prefix server & npm run dev --prefix client & wait)",
+    "seed": "npm run seed --prefix server",
+    "test": "npm test --prefix server"
+  }
+}
