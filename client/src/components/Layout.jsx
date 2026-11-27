@@ -223,18 +223,18 @@ export function Footer() {
           <Link to="/cart">Cart</Link>
         </div>
         <div>
-          <h4>Paying</h4>
-          <p style={{ fontSize: 14.5 }}>
-            {razorpay.enabled
-              ? 'Card, UPI and netbanking payments are handled by Razorpay. We never see or store your card details.'
-              : 'Pay the courier in cash when your order arrives.'}
-          </p>
+          <h4>Help</h4>
+          <Link to="/shipping">Shipping</Link>
+          <Link to="/refunds">Refunds &amp; cancellation</Link>
+          <Link to="/terms">Terms &amp; conditions</Link>
+          <Link to="/privacy">Privacy policy</Link>
+          <Link to="/contact">Contact us</Link>
         </div>
       </div>
       <div className="footer-word" aria-hidden="true">LayerForge</div>
       <div className="wrap footer-base">
         <span>© {new Date().getFullYear()} LayerForge</span>
-        <span>All prices in Indian rupees</span>
+        <span>{razorpay.enabled ? 'Online payments secured by Razorpay · ' : ''}All prices in Indian rupees</span>
       </div>
     </footer>
   );

@@ -142,6 +142,9 @@ function CheckoutForm({ user }) {
               {busy || snapshot ? 'Working…' : payWith === 'razorpay' ? 'Pay securely' : 'Place order'}
             </button>
             <p className="fine">
+              By placing this order you agree to our <Link to="/terms" className="link">Terms</Link>,{' '}
+              <Link to="/refunds" className="link">Refund policy</Link> and{' '}
+              <Link to="/privacy" className="link">Privacy policy</Link>.{' '}
               {payWith === 'razorpay'
                 ? 'Prices are checked again on our side before you pay. If you close the payment window, your order waits for you under My orders.'
                 : 'You can cancel from your orders page until it ships.'}

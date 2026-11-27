@@ -21,8 +21,9 @@ function describeMongoUri(uri) {
   })();
   const problems = [];
   if (!/^mongodb(\+srv)?:$/.test(u.protocol)) problems.push('it does not start with mongodb+srv://');
-  if (!u.username) problems.push('no username');
-  if (!password) problems.push('no password');
+  // A local database usually has no login; a hosted one (mongodb+srv) always does.
+  if (u.protocol === 'mongodb+srv:' && !u.username) problems.push('no username');
+  if (u.protocol === 'mongodb+srv:' && !password) problems.push('no password');
   if (/YOUR_PASSWORD|<|>|db_password/i.test(password)) problems.push('the password still contains a placeholder or < > brackets');
   if (/\s/.test(password)) problems.push('the password contains spaces');
   return (

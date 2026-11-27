@@ -538,3 +538,25 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .admin-btn { border-color: var(--ink); font-family: var(--mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
 .admin-btn::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 1.5px var(--ink); }
 .admin-btn.is-active, .admin-btn:hover { background: var(--ink); color: var(--paper); }
+
+/* ---------- Policy pages ---------- */
+
+.policy { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 40px; align-items: start; }
+.policy-nav { position: sticky; top: 90px; display: flex; flex-direction: column; gap: 2px; }
+.policy-nav a { padding: 9px 12px; border-radius: var(--r); text-decoration: none; color: var(--ink-2); font-size: 15px; }
+.policy-nav a:hover { background: var(--paper-2); color: var(--ink); }
+.policy-nav a.is-on { background: var(--ink); color: var(--paper); }
+.prose { max-width: 720px; font-size: 16.5px; line-height: 1.65; color: var(--ink-2); }
+.prose h2 { margin: 32px 0 10px; font-size: 24px; color: var(--ink); }
+.prose h2:first-child { margin-top: 0; }
+.prose ul { margin: 0 0 1em; padding-left: 1.2em; }
+.prose li { margin-bottom: 6px; }
+.prose li::marker { color: var(--molten); }
+.prose strong { color: var(--ink); font-weight: 600; }
+.todo { background: #fde68a; color: #6b4200; padding: 0 4px; border-radius: 3px; font-weight: 600; }
+.contact-kv { margin: 8px 0 20px; font-size: 16px; }
+@media (max-width: 860px) {
+  .policy { grid-template-columns: 1fr; gap: 20px; }
+  .policy-nav { position: static; flex-direction: row; overflow-x: auto; gap: 6px; }
+  .policy-nav a { flex-shrink: 0; border: 1.5px solid var(--line); border-radius: 20px; padding: 7px 13px; }
+}

@@ -8,6 +8,7 @@ import ProductPage from './pages/Product.jsx';
 import CartPage from './pages/Cart.jsx';
 import NotFound from './pages/NotFound.jsx';
 import { Login, Register } from './pages/Auth.jsx';
+import { Contact, Privacy, Refunds, Shipping, Terms } from './pages/Policies.jsx';
 
 // Pages most visitors never open are loaded only when needed.
 const Checkout = lazy(() => import('./pages/Checkout.jsx'));
@@ -39,6 +40,11 @@ export default function App() {
               <Route path="/admin" element={<Admin />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/shipping" element={<Shipping />} />
+              <Route path="/refunds" element={<Refunds />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
