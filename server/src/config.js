@@ -1,37 +1,70 @@
-// Loads settings from server/.env.
-// On first run the file is created automatically with a random secret,
-// so no secret is ever hard-coded in the source.
+// All settings come from environment variables.
+//  - On your own computer they live in server/.env (created automatically on first run).
+//  - On Render they are set in the service's "Environment" page; no file is used.
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const serverRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const envPath = path.join(serverRoot, '.env');
-
-if (!fs.existsSync(envPath)) {
-  const secret = crypto.randomBytes(48).toString('hex');
-  fs.writeFileSync(
-    envPath,
-    `PORT=4000\nMONGO_URI=mongodb://127.0.0.1:27017/layerforge\nJWT_SECRET=${secret}\n`,
-    { mode: 0o600 } // readable only by you
-  );
-}
-process.loadEnvFile(envPath); // does not override variables that are already set
-
+const isProd = process.env.NODE_ENV === 'production';
 const isTest = process.env.NODE_ENV === 'test';
 
+if (!isProd) {
+  const envPath = path.join(serverRoot, '.env');
+  if (!fs.existsSync(envPath)) {
+    const secret = crypto.randomBytes(48).toString('hex');
+    fs.writeFileSync(
+      envPath,
+      [
+        'PORT=4000',
+        'MONGO_URI=mongodb://127.0.0.1:27017/layerforge',
+        `JWT_SECRET=${secret}`,
+        '',
+        '# Razorpay keys (https://dashboard.razorpay.com/app/keys). Use TEST keys while developing.',
+        '# Leave empty to offer cash on delivery only.',
+        'RAZORPAY_KEY_ID=',
+        'RAZORPAY_KEY_SECRET=',
+        'RAZORPAY_WEBHOOK_SECRET=',
+        '',
+      ].join('\n'),
+      { mode: 0o600 } // readable only by you
+    );
+  }
+  process.loadEnvFile(envPath); // does not override variables that are already set
+}
+
+const env = (name) => (process.env[name] || '').trim();
+
 export const config = {
+  isProd,
   isTest,
-  port: Number(process.env.PORT) || 4000,
-  // Only listen on this computer - the site is not reachable from the network.
-  host: '127.0.0.1',
-  mongoUri: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/layerforge',
-  jwtSecret: process.env.JWT_SECRET,
+  port: Number(env('PORT')) || 4000,
+  // Locally: this computer only. In production the host's proxy must be able to reach us.
+  host: isProd ? '0.0.0.0' : '127.0.0.1',
+  onRender: Boolean(env('RENDER')),
+  mongoUri: env('MONGO_URI') || (isProd ? '' : 'mongodb://127.0.0.1:27017/layerforge'),
+  jwtSecret: env('JWT_SECRET'),
   bcryptRounds: isTest ? 4 : 12,
+  razorpay: {
+    keyId: env('RAZORPAY_KEY_ID'),
+    keySecret: env('RAZORPAY_KEY_SECRET'),
+    webhookSecret: env('RAZORPAY_WEBHOOK_SECRET'),
+  },
+  shipping: { fee: 79, freeAbove: 999 }, // rupees
+  maxQtyPerProduct: 10,
+  maxUnpaidOrders: 3, // online orders waiting for payment, per account
+  maxOpenOrders: 5, // orders not yet packed (paid or cash), per account
+  pendingPaymentMinutes: 30, // unpaid online orders are cancelled after this long
   clientDist: path.resolve(serverRoot, '..', 'client', 'dist'),
 };
 
+if (!config.mongoUri) {
+  throw new Error('MONGO_URI is not set. Add your MongoDB Atlas connection string to the environment.');
+}
 if (!config.jwtSecret || config.jwtSecret.length < 32) {
-  throw new Error('JWT_SECRET in server/.env is missing or too short (need 32+ characters).');
+  throw new Error('JWT_SECRET is missing or too short (need 32+ characters).');
+}
+if (isProd && config.razorpay.keyId.startsWith('rzp_test_')) {
+  console.warn('Note: Razorpay is using TEST keys. No real money will move until you switch to live keys.');
 }

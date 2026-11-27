@@ -10,7 +10,7 @@ export async function api(path, { method = 'GET', body } = {}) {
       body: body ? JSON.stringify(body) : undefined,
     });
   } catch {
-    throw new Error('Cannot reach the server. Is it running?');
+    throw new Error('Cannot reach the shop right now. Check your connection and try again.');
   }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
@@ -21,4 +21,9 @@ export async function api(path, { method = 'GET', body } = {}) {
   return data;
 }
 
-export const rupees = (n) => `₹${Number(n).toLocaleString('en-IN')}`;
+export const rupees = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
+export const shortId = (id) => String(id).slice(-6).toUpperCase();
+export const imageUrl = (product) => `/api/products/${product._id || product.id}/image?v=${product.imageVersion}`;
+export const when = (date) => new Date(date).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+export const CATEGORY_CODES = { Printers: 'PRN', Filament: 'FIL', Resin: 'RSN', Parts: 'PRT', 'Printed Models': 'MDL' };
