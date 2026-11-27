@@ -130,6 +130,11 @@ export function Header() {
         </nav>
 
         <div className="header-actions">
+          {user?.isAdmin && (
+            <NavLink to="/admin" className={({ isActive }) => `icon-btn admin-btn hide-sm${isActive ? ' is-active' : ''}`}>
+              Admin
+            </NavLink>
+          )}
           {user ? (
             <div className="menu hide-sm" ref={accountRef}>
               <button className="icon-btn" aria-expanded={accountOpen} aria-haspopup="menu" onClick={() => setAccountOpen((o) => !o)}>

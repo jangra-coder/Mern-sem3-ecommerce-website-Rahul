@@ -533,3 +533,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
 }
+
+/* Admin shortcut in the header (admins only) */
+.admin-btn { border-color: var(--ink); font-family: var(--mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+.admin-btn::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 1.5px var(--ink); }
+.admin-btn.is-active, .admin-btn:hover { background: var(--ink); color: var(--paper); }
