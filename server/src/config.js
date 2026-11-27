@@ -36,6 +36,18 @@ if (!isProd) {
 
 const env = (name) => (process.env[name] || '').trim();
 
+// Tidies a pasted connection string: invisible characters some terminals add
+// when pasting, surrounding quotes, or a "MONGO_URI=" copied along with it.
+export function cleanUri(value) {
+  return value
+    .replace(/\x1b\[20[01]~/g, '')
+    .replace(/[\x00-\x1f\x7f]/g, '')
+    .trim()
+    .replace(/^MONGO_URI\s*=\s*/i, '')
+    .replace(/^["'`]+|["'`]+$/g, '')
+    .trim();
+}
+
 export const config = {
   isProd,
   isTest,
@@ -43,7 +55,7 @@ export const config = {
   // Locally: this computer only. In production the host's proxy must be able to reach us.
   host: isProd ? '0.0.0.0' : '127.0.0.1',
   onRender: Boolean(env('RENDER')),
-  mongoUri: env('MONGO_URI') || (isProd ? '' : 'mongodb://127.0.0.1:27017/layerforge'),
+  mongoUri: cleanUri(env('MONGO_URI')) || (isProd ? '' : 'mongodb://127.0.0.1:27017/layerforge'),
   jwtSecret: env('JWT_SECRET'),
   bcryptRounds: isTest ? 4 : 12,
   razorpay: {
