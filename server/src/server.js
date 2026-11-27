@@ -4,11 +4,42 @@ import { createApp } from './app.js';
 import { Order, Product, User } from './models.js';
 import { seedProducts } from './seed.js';
 
+// Describes MONGO_URI for the logs without ever printing the password.
+function describeMongoUri(uri) {
+  let u;
+  try {
+    u = new URL(uri);
+  } catch {
+    return 'MONGO_URI is not a valid address. It should start with mongodb+srv://';
+  }
+  const password = (() => {
+    try {
+      return decodeURIComponent(u.password);
+    } catch {
+      return u.password;
+    }
+  })();
+  const problems = [];
+  if (!/^mongodb(\+srv)?:$/.test(u.protocol)) problems.push('it does not start with mongodb+srv://');
+  if (!u.username) problems.push('no username');
+  if (!password) problems.push('no password');
+  if (/YOUR_PASSWORD|<|>|db_password/i.test(password)) problems.push('the password still contains a placeholder or < > brackets');
+  if (/\s/.test(password)) problems.push('the password contains spaces');
+  return (
+    `MONGO_URI uses user "${decodeURIComponent(u.username)}" at host "${u.hostname}", database "${u.pathname.slice(1) || '(none)'}", ` +
+    `password of ${password.length} characters. ` +
+    (problems.length
+      ? `Problems: ${problems.join('; ')}.`
+      : 'It looks well-formed, so the password probably does not match the database user. Reset it in Atlas (Database Users > Edit > Edit Password > Update User) and paste the new one.')
+  );
+}
+
 try {
   await mongoose.connect(config.mongoUri, { serverSelectionTimeoutMS: 10000 });
 } catch (err) {
   console.error('Could not connect to MongoDB. Check MONGO_URI (and that the database is running / reachable).');
   console.error(err.message);
+  console.error(describeMongoUri(config.mongoUri));
   process.exit(1);
 }
 
